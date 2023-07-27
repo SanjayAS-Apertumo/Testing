@@ -1,0 +1,12 @@
+/node_modules
+/node_modules1
+/**/dummy
+/.DS_Store
+**/.DS_Store
+.DS_Store
+/report/.DS_Store
+/report/app/.DS_Store
+browserstack.err
+local.log
+report/
+wdio-safaridriver.log

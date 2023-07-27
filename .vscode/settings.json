@@ -1,0 +1,26 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
+  "launch": {
+    "compounds": [],
+    "configurations": []
+  },
+  "eslint.validate": [
+    "javascript"
+  ],
+  "cSpell.words": [
+    "appium",
+    "browserstack",
+    "bstack",
+    "chromedriver",
+    "gamesautomation",
+    "PORTNUMBER",
+    "reportportal",
+    "safaridriver",
+    "sportybet",
+    "waitfor",
+    "wdio",
+    "webdriverio"
+  ],
+}

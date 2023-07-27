@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    service: games-automation-qa
+spec:
+  containers:
+    - name: jnlp
+      image: 942878658013.dkr.ecr.eu-central-1.amazonaws.com/third-party/jenkins/inbound-agent:4.3-4
+      env:
+        - name: CONTAINER_ENV_VAR
+          value: jnlp
+    - name: node
+      image: 942878658013.dkr.ecr.eu-central-1.amazonaws.com/third-party/node:18.16.1
+      resources:
+        requests:
+          memory: "4Gi"
+          cpu: "2"
+        limits:
+          memory: "4Gi"
+          cpu: "2"
+      command:
+        - sleep
+      args:
+        - 99d
+    - name: dind
+      image: 942878658013.dkr.ecr.eu-central-1.amazonaws.com/third-party/docker:20.10.8-dind-alpine3.14-ecr1.0
+      command: [ 'docker', 'run', '-p', '80:80', '942878658013.dkr.ecr.eu-central-1.amazonaws.com/third-party/httpd:2.4.51-buster' ]
+      resources:
+        requests:
+          cpu: 10m
+          memory: 256Mi
+      volumeMounts:
+        - name: docker-config-json
+          mountPath: /root/.docker/config.json
+          subPath: config.json
+        - mountPath: /var/run
+          name: docker-sock
+
+  volumes:
+    - name: settings-xml
+      configMap:
+        name: settings-xml
+    - name: docker-config-json
+      configMap:
+        name: docker-config-json
+    - name: maven-repo-storage
+      persistentVolumeClaim:
+        claimName: maven-repo-storage
+    - name: docker-sock
+      hostPath:
+        path: /var/run

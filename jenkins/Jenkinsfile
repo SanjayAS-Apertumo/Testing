@@ -1,0 +1,90 @@
+pipeline {
+  agent {
+    kubernetes {
+      yamlFile 'jenkins/KubernetesPod.yaml'
+    }
+  }
+
+  environment {
+    GIT_TAG = ''
+    PROJECT = 'games-automation-qa'
+  }
+
+  stages {
+    stage('Git Tag') {
+      steps {
+        container('node') {
+          script {
+            GIT_TAG = sh (
+                          script: 'git rev-parse --short HEAD',
+                          returnStdout: true
+                      ).trim()
+          }
+        }
+      }
+    }
+
+    stage('Run Automation Test Chrome WAP Sportybet UAT') {
+      when {
+        branch 'master'
+      }
+      steps {
+        container('node') {
+          sh "npm install"
+          sh "npm run chromeWap:sportybet-uat"
+        }
+      }
+    }
+
+    stage('Upload Report to S3') {
+      when {
+        branch 'master'
+      }
+      steps {
+        container('node') {
+          s3Upload (profileName: 'sportybet-s3-cdn-push',
+                    consoleLogLevel: 'INFO',
+                    dontSetBuildResultOnFailure: false,
+                    dontWaitForConcurrentBuildCompletion: true,
+                    pluginFailureResultConstraint: 'FAILURE',
+                    entries: [[
+                      bucket: 'sportybet-cdn-test/sportygames/automation-qa/reports',
+                      excludedFile: '',
+                      flatten: false,
+                      gzipFiles: false,
+                      keepForever: false,
+                      managedArtifacts: false,
+                      noUploadOnFailure: false,
+                      selectedRegion: 'eu-central-1',
+                      showDirectlyInBrowser: false,
+                      sourceFile: 'dist/sportybet/**',
+                      storageClass: 'STANDARD',
+                      uploadFromSlave: false,
+                      useServerSideEncryption: false
+                    ]],
+                    userMetadata: []
+          )
+        }
+      }
+    }
+  }
+
+  post {
+    success {
+      slackSend (
+        message: "Success - \njob_name : ${JOB_NAME} \ncommit : ${GIT_COMMIT} \nurl : ${BUILD_URL}",
+        tokenCredentialId: "slack-token-apertum-drone-bot",
+        channel: "apertum-drone",
+        botUser: true
+      )
+    }
+    failure {
+      slackSend (
+        message: "@channel Failed - \njob_name : ${JOB_NAME} \ncommit : ${GIT_COMMIT} \nurl : ${BUILD_URL}",
+        tokenCredentialId: "slack-token-apertum-drone-bot",
+        channel: "apertum-drone",
+        botUser: true
+      )
+    }
+  }
+}
