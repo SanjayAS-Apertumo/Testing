@@ -311,7 +311,7 @@ export async function dragAndDrop(draggable, droppable) {
       actions: [
         {
           type: 'pointerMove',
-          duration: 100,
+          duration: 1000,
           origin: await $(draggable),
           x: 0,
           y: 0,
