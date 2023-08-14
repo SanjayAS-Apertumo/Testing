@@ -11,7 +11,6 @@ import {
 } from '../../../utils/baseActionLibrary.js';
 import { locatorHelper } from '../../../utils/locatorHelper.js';
 import { androidLocatorPath } from '../../../utils/constant.js';
-import { spinDaBottle } from '../../locators/spinDaBottle.js';
 
 const platform = global.argsMap['platform'];
 

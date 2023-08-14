@@ -14,7 +14,6 @@ import {
 } from '../../../utils/baseActionLibrary.js';
 import { locatorHelper } from '../../../utils/locatorHelper.js';
 import { androidLocatorPath, appURL } from '../../../utils/constant.js';
-
 const platform = global.argsMap['platform'];
 
 export async function switchToParentFrameForWap() {
